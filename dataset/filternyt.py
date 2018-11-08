@@ -17,7 +17,7 @@ class FilterNYTData(Dataset):
 
         self.labels = np.load(path + 'labels.npy')
         self.x = np.load(path + 'bags_feature.npy')
-        self.x = zip(self.x, self.labels)
+        self.x = list(zip(self.x, self.labels))
 
         print('loading finish')
 
@@ -84,11 +84,11 @@ class FilterNYTLoad(object):
         vecs = []
 
         wordlist.append('BLANK')
-        wordlist.extend([word.strip('\n') for word in file(self.word_path)])
+        wordlist.extend([word.strip('\n') for word in open(self.word_path)])
 
-        for line in file(self.w2v_path):
+        for line in open(self.w2v_path):
             line = line.strip('\n').split()
-            vec = map(float, line)
+            vec = list(map(float, line))
             vecs.append(vec)
 
         dim = len(vecs[0])
@@ -109,27 +109,27 @@ class FilterNYTLoad(object):
         '''
         all_sens =[]
         all_labels =[]
-        f = file(path)
+        f = open(path)
         while 1:
             line = f.readline()
             if not line:
                 break
-            entities = map(int, line.split(' '))
+            entities = list(map(int, line.split(' ')))
             line = f.readline()
             bagLabel = line.split(' ')
 
-            rel = map(int, bagLabel[0:-1])
+            rel = list(map(int, bagLabel[0:-1]))
             num = int(bagLabel[-1])
             positions = []
             sentences = []
             entitiesPos = []
             for i in range(0, num):
                 sent = f.readline().split(' ')
-                positions.append(map(int, sent[0:2]))
-                epos = map(lambda x: int(x) + 1, sent[0:2])
+                positions.append(list(map(int, sent[0:2])))
+                epos = list(map(lambda x: int(x) + 1, sent[0:2]))
                 epos.sort()
                 entitiesPos.append(epos)
-                sentences.append(map(int, sent[2:-1]))
+                sentences.append(list(map(int, sent[2:-1])))
             bag = [entities, num, sentences, positions, entitiesPos]
             all_labels.append(rel)
             all_sens += [bag]
@@ -197,8 +197,8 @@ class FilterNYTLoad(object):
 
         pf1 = [0]
         pf2 = [0]
-        pf1 += map(padding, index - ent_pos[0] + 2 + self.limit)
-        pf2 += map(padding, index - ent_pos[1] + 2 + self.limit)
+        pf1 += list(map(padding, index - ent_pos[0] + 2 + self.limit))
+        pf2 += list(map(padding, index - ent_pos[1] + 2 + self.limit))
 
         if len(pf1) < self.max_len + 2 * self.pad:
             pf1 += [0] * (self.max_len + 2 * self.pad - len(pf1))
@@ -207,4 +207,4 @@ class FilterNYTLoad(object):
 
 
 if __name__ == "__main__":
-    data = FilterNYTLoad('./dataset/FilterNYT/')
+    data = FilterNYTLoad('./FilterNYT/')

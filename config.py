@@ -71,7 +71,7 @@ def parse(self, kwargs):
         '''
         user can update the default hyperparamter
         '''
-        for k, v in kwargs.iteritems():
+        for k, v in kwargs.items():
             if not hasattr(self, k):
                 raise Exception('opt has No key: {}'.format(k))
             setattr(self, k, v)
@@ -81,7 +81,7 @@ def parse(self, kwargs):
 
         print('*************************************************')
         print('user config:')
-        for k, v in self.__class__.__dict__.iteritems():
+        for k, v in self.__class__.__dict__.items():
             if not k.startswith('__'):
                 print("{} => {}".format(k, getattr(self, k)))
 

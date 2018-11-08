@@ -118,9 +118,9 @@ def select_instance(model, batch_data, labels):
             max_ins_id = torch.max(out[:, label], 0)[1]
 
             if opt.use_gpu:
-                max_ins_id = max_ins_id.data.cpu().numpy()[0]
+                max_ins_id = max_ins_id.data.cpu().numpy()
             else:
-                max_ins_id = max_ins_id.data.numpy()[0]
+                max_ins_id = max_ins_id.data.numpy()
 
         max_sen = bag[2][max_ins_id]
         max_pf = bag[3][max_ins_id]
@@ -195,5 +195,6 @@ def predict(model, test_data_loader):
 
 
 if __name__ == "__main__":
-    import fire
-    fire.Fire()
+    train(data="FilterNYT", batch_size=128, use_gpu=False, use_pcnn=False)
+    # import fire
+    # fire.Fire()
