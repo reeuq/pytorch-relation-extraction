@@ -19,10 +19,8 @@ class PCNN_ONE(BasicModule):
         self.model_name = 'PCNN_ONE'
 
         self.word_embs = nn.Embedding(self.opt.vocab_size, self.opt.word_dim)
-        self.pos1_embs = nn.Embedding(self.opt.pos_size, self.opt.pos_dim)
-        self.pos2_embs = nn.Embedding(self.opt.pos_size, self.opt.pos_dim)
 
-        feature_dim = self.opt.word_dim + self.opt.pos_dim * 2
+        feature_dim = self.opt.word_dim
 
         # for more filter size
         self.convs = nn.ModuleList([nn.Conv2d(1, self.opt.filters_num, (k, feature_dim), padding=(int(k / 2), 0)) for k in self.opt.filters])
@@ -59,16 +57,10 @@ class PCNN_ONE(BasicModule):
             return v
 
         w2v = p_2norm(self.opt.w2v_path)
-        p1_2v = p_2norm(self.opt.p1_2v_path)
-        p2_2v = p_2norm(self.opt.p2_2v_path)
 
         if self.opt.use_gpu:
             self.word_embs.weight.data.copy_(w2v.cuda())
-            self.pos1_embs.weight.data.copy_(p1_2v.cuda())
-            self.pos2_embs.weight.data.copy_(p2_2v.cuda())
         else:
-            self.pos1_embs.weight.data.copy_(p1_2v)
-            self.pos2_embs.weight.data.copy_(p2_2v)
             self.word_embs.weight.data.copy_(w2v)
 
     def piece_max_pooling(self, x, insPool):
@@ -93,21 +85,18 @@ class PCNN_ONE(BasicModule):
         return out
 
     def forward(self, x):
-        insEnt, _, insX, insPFs, insPool = x
-        insPF1, insPF2 = [i.squeeze(1) for i in torch.split(insPFs, 1, 1)]
+        insEnt, _, insX = x
 
         word_emb = self.word_embs(insX)
-        pf1_emb = self.pos1_embs(insPF1)
-        pf2_emb = self.pos2_embs(insPF2)
 
-        x = torch.cat([word_emb, pf1_emb, pf2_emb], 2)
-        x = x.unsqueeze(1)
+        x = word_emb.unsqueeze(1)
         x = self.dropout(x)
 
         x = [F.tanh(conv(x)).squeeze(3) for conv in self.convs]
 
         if self.opt.use_pcnn:
-            x = [self.piece_max_pooling(i, insPool) for i in x]
+            # x = [self.piece_max_pooling(i, insPool) for i in x]
+            pass
         else:
             x = [F.max_pool1d(i, i.size(2)).squeeze(2) for i in x]
 

@@ -78,5 +78,5 @@ def plot_one(prefix, flag=True):
     plt.show()
 
 
-plot_one("PCNN_ONE_DEF")
-plot_mul(["PCNN_ONE_DEF_6_PR.txt","test_pr_12.txt"])
+# plot_one("PCNN_ONE_DEF")
+plot_mul(["test_pr_12.txt", "SDP_158/PCNN_ONE_DEF_6_PR.txt"])

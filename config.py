@@ -2,19 +2,19 @@
 
 data_dic ={
     'NYT': {
-        'data_root': './dataset/NYT/',
-        'w2v_path': './dataset/NYT/w2v.npy',
-        'p1_2v_path': './dataset/NYT/p1_2v.npy',
-        'p2_2v_path': './dataset/NYT/p2_2v.npy',
+        'data_root': './dataset_new/NYT/',
+        'w2v_path': './dataset_new/NYT/w2v.npy',
+        'p1_2v_path': './dataset_new/NYT/p1_2v.npy',
+        'p2_2v_path': './dataset_new/NYT/p2_2v.npy',
         'vocab_size': 114044,
         'rel_num': 53
     },
     'FilterNYT': {
-        'data_root': './dataset/FilterNYT/',
-        'w2v_path': './dataset/FilterNYT/w2v.npy',
-        'p1_2v_path': './dataset/FilterNYT/p1_2v.npy',
-        'p2_2v_path': './dataset/FilterNYT/p2_2v.npy',
-        'vocab_size': 160695 + 2,
+        'data_root': './dataset_new/FilterNYT/',
+        'w2v_path': './dataset_new/FilterNYT/w2v.npy',
+        'p1_2v_path': './dataset_new/FilterNYT/p1_2v.npy',
+        'p2_2v_path': './dataset_new/FilterNYT/p2_2v.npy',
+        'vocab_size': 160731 + 2,
         'rel_num': 27
     }
 }
@@ -38,7 +38,7 @@ class DefaultConfig(object):
     gpu_id = 0
     num_workers = 2  # how many workers for loading data
 
-    max_len = 80 + 2  # max_len for each sentence + two padding
+    max_len = 49 + 2  # max_len for each sentence + two padding
     limit = 50  # the position range <-limit, limit>
 
     vocab_size = data_dic[data]['vocab_size']  # vocab + UNK + BLANK

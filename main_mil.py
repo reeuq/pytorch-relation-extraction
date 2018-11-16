@@ -2,7 +2,7 @@
 
 from config import opt
 import models
-import dataset
+import dataset_new as dataset
 import torch
 import torch.nn as nn
 from torch.utils.data import DataLoader
@@ -74,8 +74,10 @@ def train(**kwargs):
             optimizer.step()
 
             total_loss += loss.data[0]
+            # print("idx: ", idx)
 
         if epoch < 3:
+            print("epoch: ", epoch)
             continue
         true_y, pred_y, pred_p = predict(model, test_data_loader)
         all_pre, all_rec, fp_res = eval_metric(true_y, pred_y, pred_p)
@@ -99,8 +101,6 @@ def select_instance(model, batch_data, labels):
     select_ent = []
     select_num = []
     select_sen = []
-    select_pf = []
-    select_pool = []
     for idx, bag in enumerate(batch_data):
         insNum = bag[1]
         label = labels[idx]
@@ -123,19 +123,15 @@ def select_instance(model, batch_data, labels):
                 max_ins_id = max_ins_id.data.numpy()
 
         max_sen = bag[2][max_ins_id]
-        max_pf = bag[3][max_ins_id]
-        max_pool = bag[4][max_ins_id]
 
         select_ent.append(bag[0])
         select_num.append(bag[1])
         select_sen.append(max_sen)
-        select_pf.append(max_pf)
-        select_pool.append(max_pool)
 
     if opt.use_gpu:
-        data = map(lambda x: Variable(torch.LongTensor(x).cuda()), [select_ent, select_num, select_sen, select_pf, select_pool])
+        data = map(lambda x: Variable(torch.LongTensor(x).cuda()), [select_ent, select_num, select_sen])
     else:
-        data = map(lambda x: Variable(torch.LongTensor(x)), [select_ent, select_num, select_sen, select_pf, select_pool])
+        data = map(lambda x: Variable(torch.LongTensor(x)), [select_ent, select_num, select_sen])
 
     model.train()
     return data
@@ -195,6 +191,6 @@ def predict(model, test_data_loader):
 
 
 if __name__ == "__main__":
-    train(data="FilterNYT", batch_size=128, use_gpu=False, use_pcnn=False)
+    train(data="FilterNYT", batch_size=128, use_gpu=True, use_pcnn=False)
     # import fire
     # fire.Fire()
