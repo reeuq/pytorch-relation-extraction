@@ -10,6 +10,7 @@ label_font_size = 18
 marker = ['>', 'v', '^', 'o', 's']
 
 d = 'out/'
+# d = 'out/SDP_diff_relation_multi_kernal_one/'
 
 
 def getXY(file_name, n=3000):
@@ -79,4 +80,4 @@ def plot_one(prefix, flag=True):
 
 
 # plot_one("PCNN_ONE_DEF")
-plot_mul(["SDP_diff_relation_62_two/PCNN_ONE_DEF_9_PR.txt", "SDP_diff_relation_62_one/PCNN_ONE_DEF_6_PR.txt"])
+plot_mul(["SDP_diff_relation_multi_kernal_one/PCNN_ONE_DEF_9_PR.txt", "SDP_diff_relation_62_one/PCNN_ONE_DEF_6_PR.txt"])
