@@ -37,7 +37,7 @@ class FilterNYTLoad(object):
     max_len: the sentence's max length
     limit: the max length of position's one side(entity' left side or right side)
     '''
-    def __init__(self, root_path, max_len=49, limit=50, pos_dim=5, pad=1):
+    def __init__(self, root_path, max_len=25, limit=50, pos_dim=5, pad=1):
 
         self.max_len = max_len
         self.limit = limit
@@ -87,7 +87,7 @@ class FilterNYTLoad(object):
 
         dim = len(vecs[0])
         vecs.insert(0, np.zeros(dim))
-        for i in range(37):
+        for i in range(78):
             vecs.append(np.random.uniform(low=-1.0, high=1.0, size=dim))
 
         word2id = {j: i for i, j in enumerate(wordlist)}
@@ -128,11 +128,11 @@ class FilterNYTLoad(object):
         max_len = 0
         for each_sen in sen:
             sen_id = []
-            for each_word in each_sen.split(' '):
+            for each_word in each_sen:
                 sen_id.append(self.word2id[each_word])
             sen_ids.append(sen_id)
-            if len(each_sen.split(' ')) > max_len:
-                max_len = len(each_sen.split(' '))
+            if len(each_sen) > max_len:
+                max_len = len(each_sen)
         return sen_ids, max_len
 
     def get_entity_id(self, entity):

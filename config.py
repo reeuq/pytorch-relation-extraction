@@ -14,7 +14,7 @@ data_dic ={
         'w2v_path': './dataset_new/FilterNYT/w2v.npy',
         'p1_2v_path': './dataset_new/FilterNYT/p1_2v.npy',
         'p2_2v_path': './dataset_new/FilterNYT/p2_2v.npy',
-        'vocab_size': 160731 + 2,
+        'vocab_size': 160772 + 2,
         'rel_num': 27
     }
 }
@@ -38,7 +38,7 @@ class DefaultConfig(object):
     gpu_id = 0
     num_workers = 2  # how many workers for loading data
 
-    max_len = 49 + 2  # max_len for each sentence + two padding
+    max_len = 25 + 2  # max_len for each sentence + two padding
     limit = 50  # the position range <-limit, limit>
 
     vocab_size = data_dic[data]['vocab_size']  # vocab + UNK + BLANK
@@ -56,7 +56,7 @@ class DefaultConfig(object):
     weight_decay = 0.0001  # optimizer parameter
 
     # Conv
-    filters = [3]
+    filters = [3, 5]
     filters_num = 230
     sen_feature_dim = filters_num
 
