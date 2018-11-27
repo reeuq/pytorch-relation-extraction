@@ -80,4 +80,4 @@ def plot_one(prefix, flag=True):
 
 
 # plot_one("PCNN_ONE_DEF")
-plot_mul(["SDP_diff_relation_multi_kernal_one/PCNN_ONE_DEF_9_PR.txt", "SDP_diff_relation_62_one/PCNN_ONE_DEF_6_PR.txt"])
+plot_mul(["official_theano/test_pr_12.txt", "SDP_diff_relation_62_one/PCNN_ONE_DEF_6_PR.txt"])

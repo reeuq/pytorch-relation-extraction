@@ -33,3 +33,7 @@
 >
 > out/SDP_diff_relation_multi_kernal_one/
 > pytorch+CNN+SDP**(CNN具有大小不同的kernal)**在62设备上的运行结果（">>>"与relation一起编码）
+
+##### 只用sentence+CNN+MIL的最好结果为"sentence/PCNN_ONE_DEF_16_PR.txt"
+> out/sentence/
+> pytorch+CNN+sentence的结果（在原数据及模型的基础上，仅仅去除相对位置特征）
