@@ -81,7 +81,7 @@ def train(**kwargs):
         all_pre, all_rec, fp_res = eval_metric(true_y, pred_y, pred_p)
 
         last_pre, last_rec = all_pre[-1], all_rec[-1]
-        if last_pre > 0.24 and last_rec > 0.24:
+        if last_pre > 0.1 and last_rec > 0.1:
             save_pr(opt.result_dir, model.model_name, epoch, all_pre, all_rec, fp_res, opt=opt.print_opt)
             print('{} Epoch {} save pr'.format(now(), epoch + 1))
             if last_pre > max_pre and last_rec > max_rec:
@@ -118,9 +118,9 @@ def select_instance(model, batch_data, labels):
             max_ins_id = torch.max(out[:, label], 0)[1]
 
             if opt.use_gpu:
-                max_ins_id = max_ins_id.data.cpu().numpy()
+                max_ins_id = max_ins_id.data.cpu().numpy()[0]
             else:
-                max_ins_id = max_ins_id.data.numpy()
+                max_ins_id = max_ins_id.data.numpy()[0]
 
         max_sen = bag[2][max_ins_id]
         max_pf = bag[3][max_ins_id]

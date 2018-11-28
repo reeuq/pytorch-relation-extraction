@@ -22,7 +22,7 @@ class PCNN_ONE(BasicModule):
         self.pos1_embs = nn.Embedding(self.opt.pos_size, self.opt.pos_dim)
         self.pos2_embs = nn.Embedding(self.opt.pos_size, self.opt.pos_dim)
 
-        feature_dim = self.opt.word_dim + self.opt.pos_dim * 2
+        feature_dim = self.opt.word_dim
 
         # for more filter size
         self.convs = nn.ModuleList([nn.Conv2d(1, self.opt.filters_num, (k, feature_dim), padding=(int(k / 2), 0)) for k in self.opt.filters])
@@ -94,20 +94,21 @@ class PCNN_ONE(BasicModule):
 
     def forward(self, x):
         insEnt, _, insX, insPFs, insPool = x
-        insPF1, insPF2 = [i.squeeze(1) for i in torch.split(insPFs, 1, 1)]
+        # insPF1, insPF2 = [i.squeeze(1) for i in torch.split(insPFs, 1, 1)]
 
         word_emb = self.word_embs(insX)
-        pf1_emb = self.pos1_embs(insPF1)
-        pf2_emb = self.pos2_embs(insPF2)
+        # pf1_emb = self.pos1_embs(insPF1)
+        # pf2_emb = self.pos2_embs(insPF2)
 
-        x = torch.cat([word_emb, pf1_emb, pf2_emb], 2)
-        x = x.unsqueeze(1)
+        # x = torch.cat([word_emb, pf1_emb, pf2_emb], 2)
+        x = word_emb.unsqueeze(1)
         x = self.dropout(x)
 
         x = [F.tanh(conv(x)).squeeze(3) for conv in self.convs]
 
         if self.opt.use_pcnn:
-            x = [self.piece_max_pooling(i, insPool) for i in x]
+            # x = [self.piece_max_pooling(i, insPool) for i in x]
+            pass
         else:
             x = [F.max_pool1d(i, i.size(2)).squeeze(2) for i in x]
 
