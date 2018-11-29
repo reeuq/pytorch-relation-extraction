@@ -3,16 +3,17 @@
 from torch.utils.data import Dataset
 import os
 import numpy as np
+import codecs
 
 
 class FilterNYTData(Dataset):
 
     def __init__(self, root_path, train=True):
         if train:
-            path = os.path.join(root_path, 'train/')
+            path = os.path.join(root_path, 'new_train/')
             print('loading train data')
         else:
-            path = os.path.join(root_path, 'test/')
+            path = os.path.join(root_path, 'new_test/')
             print('loading test data')
 
         self.labels = np.load(path + 'labels.npy')
@@ -84,7 +85,7 @@ class FilterNYTLoad(object):
         vecs = []
 
         wordlist.append('BLANK')
-        wordlist.extend([word.strip('\n') for word in open(self.word_path)])
+        wordlist.extend([word.strip('\n') for word in codecs.open(self.word_path, encoding='utf-8')])
 
         for line in open(self.w2v_path):
             line = line.strip('\n').split()

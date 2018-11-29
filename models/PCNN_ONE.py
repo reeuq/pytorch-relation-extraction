@@ -19,16 +19,24 @@ class PCNN_ONE(BasicModule):
         self.model_name = 'PCNN_ONE'
 
         self.word_embs = nn.Embedding(self.opt.vocab_size, self.opt.word_dim)
+        self.pos1_embs = nn.Embedding(self.opt.pos_size, self.opt.pos_dim)
+        self.pos2_embs = nn.Embedding(self.opt.pos_size, self.opt.pos_dim)
 
-        feature_dim = self.opt.word_dim
+        feature_dim = self.opt.word_dim + self.opt.pos_dim * 2
+        sdp_feature_dim = self.opt.word_dim
 
         # for more filter size
-        self.convs = nn.ModuleList([nn.Conv2d(1, self.opt.filters_num, (k, feature_dim), padding=(int(k / 2), 0)) for k in self.opt.filters])
+        self.convs = nn.ModuleList([nn.Conv2d(1, self.opt.filters_num, (k, feature_dim),
+                                              padding=(int(k / 2), 0)) for k in self.opt.filters])
+        self.sdp_convs = nn.ModuleList([nn.Conv2d(1, self.opt.sdp_filters_num, (k, sdp_feature_dim),
+                                                  padding=(int(k / 2), 0)) for k in self.opt.sdp_filters])
 
         all_filter_num = self.opt.filters_num * len(self.opt.filters)
 
         if self.opt.use_pcnn:
             all_filter_num = all_filter_num * 3
+
+        all_filter_num = all_filter_num + self.opt.sdp_filters_num * len(self.opt.sdp_filters)
 
         self.linear = nn.Linear(all_filter_num, self.opt.rel_num)
         self.dropout = nn.Dropout(self.opt.drop_out)
@@ -41,6 +49,10 @@ class PCNN_ONE(BasicModule):
         use xavier to init
         '''
         for conv in self.convs:
+            nn.init.xavier_uniform(conv.weight)
+            nn.init.constant(conv.bias, 0.0)
+
+        for conv in self.sdp_convs:
             nn.init.xavier_uniform(conv.weight)
             nn.init.constant(conv.bias, 0.0)
 
@@ -57,11 +69,17 @@ class PCNN_ONE(BasicModule):
             return v
 
         w2v = p_2norm(self.opt.w2v_path)
+        p1_2v = p_2norm(self.opt.p1_2v_path)
+        p2_2v = p_2norm(self.opt.p2_2v_path)
 
         if self.opt.use_gpu:
             self.word_embs.weight.data.copy_(w2v.cuda())
+            self.pos1_embs.weight.data.copy_(p1_2v.cuda())
+            self.pos2_embs.weight.data.copy_(p2_2v.cuda())
         else:
             self.word_embs.weight.data.copy_(w2v)
+            self.pos1_embs.weight.data.copy_(p1_2v)
+            self.pos2_embs.weight.data.copy_(p2_2v)
 
     def piece_max_pooling(self, x, insPool):
         '''
@@ -85,22 +103,37 @@ class PCNN_ONE(BasicModule):
         return out
 
     def forward(self, x):
-        insEnt, _, insX = x
+        # sentence + position + sdp数据
+        insEnt, _, insX, insPFs, insPool, sdp = x
+        insPF1, insPF2 = [i.squeeze(1) for i in torch.split(insPFs, 1, 1)]
 
+        # sentence, position, sdp数据进行embedding操作
         word_emb = self.word_embs(insX)
+        pf1_emb = self.pos1_embs(insPF1)
+        pf2_emb = self.pos2_embs(insPF2)
+        sdp_word_emb = self.word_embs(sdp)
 
-        x = word_emb.unsqueeze(1)
+        # sentence，position词向量进行拼接，并进行shape变换
+        x = torch.cat([word_emb, pf1_emb, pf2_emb], 2)
+        x = x.unsqueeze(1)
         x = self.dropout(x)
 
+        # sdp词向量进行shape变换
+        x_1 = sdp_word_emb.unsqueeze(1)
+        x_1 = self.dropout(x_1)
+
         x = [F.tanh(conv(x)).squeeze(3) for conv in self.convs]
+        x_1 = [F.tanh(sdp_conv(x_1)).squeeze(3) for sdp_conv in self.sdp_convs]
 
         if self.opt.use_pcnn:
-            # x = [self.piece_max_pooling(i, insPool) for i in x]
-            pass
+            x = [self.piece_max_pooling(i, insPool) for i in x]
         else:
             x = [F.max_pool1d(i, i.size(2)).squeeze(2) for i in x]
+        x_1 = [F.max_pool1d(i, i.size(2)).squeeze(2) for i in x_1]
 
         x = torch.cat(x, 1)
+        x_1 = torch.cat(x_1, 1)
+        x = torch.cat([x, x_1], 1)
         x = self.dropout(x)
         x = self.linear(x)
 

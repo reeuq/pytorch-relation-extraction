@@ -93,7 +93,7 @@ class FilterNYTLoad(object):
         word2id = {j: i for i, j in enumerate(wordlist)}
         id2word = {i: j for i, j in enumerate(wordlist)}
 
-        entity_wordlist = []
+        entity_wordlist = ['BLANK']
         entity_wordlist.extend([word.strip('\n') for word in codecs.open(self.entity_dict_path, encoding="utf-8")])
         entity_word2id = {j: i for i, j in enumerate(entity_wordlist)}
 

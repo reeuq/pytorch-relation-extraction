@@ -10,10 +10,10 @@ data_dic ={
         'rel_num': 53
     },
     'FilterNYT': {
-        'data_root': './dataset_new/FilterNYT/',
-        'w2v_path': './dataset_new/FilterNYT/w2v.npy',
-        'p1_2v_path': './dataset_new/FilterNYT/p1_2v.npy',
-        'p2_2v_path': './dataset_new/FilterNYT/p2_2v.npy',
+        'data_root': './dataset/FilterNYT/',
+        'w2v_path': './dataset/FilterNYT/w2v.npy',
+        'p1_2v_path': './dataset/FilterNYT/p1_2v.npy',
+        'p2_2v_path': './dataset/FilterNYT/p2_2v.npy',
         'vocab_size': 160772 + 2,
         'rel_num': 27
     }
@@ -56,9 +56,11 @@ class DefaultConfig(object):
     weight_decay = 0.0001  # optimizer parameter
 
     # Conv
-    filters = [3, 5]
+    filters = [3]
     filters_num = 230
-    sen_feature_dim = filters_num
+    # sen_feature_dim = filters_num
+    sdp_filters = [3]
+    sdp_filters_num = 230
 
     rel_dim = filters_num * len(filters)
     rel_filters_num = 100

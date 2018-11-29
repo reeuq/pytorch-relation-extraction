@@ -2,7 +2,7 @@
 
 from config import opt
 import models
-import dataset_new as dataset
+import dataset
 import torch
 import torch.nn as nn
 from torch.utils.data import DataLoader
@@ -10,6 +10,7 @@ import torch.optim as optim
 import torch.nn.functional as F
 from torch.autograd import Variable
 from utils import save_pr, now, eval_metric
+# from torchviz import make_dot
 
 
 def collate_fn(batch):
@@ -35,6 +36,12 @@ def train(**kwargs):
         # torch.cuda.manual_seed_all(opt.seed)
         model.cuda()
         #  model = nn.DataParallel(model)
+
+    # # 图形化显示网络模型结构
+    # x = (torch.randn(24, 2), torch.randn(1, 8), torch.ones(24, 8).long(), torch.ones(24, 2, 8).long(),
+    #      torch.randn(24, 8),  torch.ones(24, 8).long())
+    # dot = make_dot(model(x), params=dict(model.named_parameters()))
+    # dot.view()
 
     # loading data
     DataModel = getattr(dataset, opt.data + 'Data')
@@ -101,6 +108,9 @@ def select_instance(model, batch_data, labels):
     select_ent = []
     select_num = []
     select_sen = []
+    select_pf = []
+    select_pool = []
+    select_sdp = []
     for idx, bag in enumerate(batch_data):
         insNum = bag[1]
         label = labels[idx]
@@ -123,15 +133,23 @@ def select_instance(model, batch_data, labels):
                 max_ins_id = max_ins_id.data.numpy()
 
         max_sen = bag[2][max_ins_id]
+        max_pf = bag[3][max_ins_id]
+        max_pool = bag[4][max_ins_id]
+        max_sdp = bag[5][max_ins_id]
 
         select_ent.append(bag[0])
         select_num.append(bag[1])
         select_sen.append(max_sen)
+        select_pf.append(max_pf)
+        select_pool.append(max_pool)
+        select_sdp.append(max_sdp)
 
     if opt.use_gpu:
-        data = map(lambda x: Variable(torch.LongTensor(x).cuda()), [select_ent, select_num, select_sen])
+        data = map(lambda x: Variable(torch.LongTensor(x).cuda()), [select_ent, select_num, select_sen, select_pf,
+                                                                    select_pool, select_sdp])
     else:
-        data = map(lambda x: Variable(torch.LongTensor(x)), [select_ent, select_num, select_sen])
+        data = map(lambda x: Variable(torch.LongTensor(x)), [select_ent, select_num, select_sen, select_pf,
+                                                             select_pool, select_sdp])
 
     model.train()
     return data
@@ -191,6 +209,6 @@ def predict(model, test_data_loader):
 
 
 if __name__ == "__main__":
-    train(data="FilterNYT", batch_size=128, use_gpu=True, use_pcnn=False)
+    train(data="FilterNYT", batch_size=128, use_gpu=False, use_pcnn=False)
     # import fire
     # fire.Fire()
