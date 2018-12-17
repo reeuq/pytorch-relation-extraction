@@ -41,6 +41,8 @@ class PCNN_ONE(BasicModule):
         self.linear = nn.Linear(all_filter_num, self.opt.rel_num)
         self.dropout = nn.Dropout(self.opt.drop_out)
 
+        self.linear_test = nn.Linear(all_filter_num, self.opt.rel_num)
+
         self.init_model_weight()
         self.init_word_emb()
 
@@ -77,9 +79,9 @@ class PCNN_ONE(BasicModule):
             self.pos1_embs.weight.data.copy_(p1_2v.cuda())
             self.pos2_embs.weight.data.copy_(p2_2v.cuda())
         else:
-            self.word_embs.weight.data.copy_(w2v)
             self.pos1_embs.weight.data.copy_(p1_2v)
             self.pos2_embs.weight.data.copy_(p2_2v)
+            self.word_embs.weight.data.copy_(w2v)
 
     def piece_max_pooling(self, x, insPool):
         '''
@@ -135,6 +137,11 @@ class PCNN_ONE(BasicModule):
         x_1 = torch.cat(x_1, 1)
         x = torch.cat([x, x_1], 1)
         x = self.dropout(x)
-        x = self.linear(x)
+        if self.training:
+            x = self.linear(x)
+        else:
+            self.linear_test.weight.data.copy_((1 - self.opt.drop_out) * self.linear.weight.data)
+            self.linear_test.bias.data.copy_(self.linear.bias.data)
+            x = self.linear_test(x)
 
         return x

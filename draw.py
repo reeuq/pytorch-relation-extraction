@@ -10,7 +10,7 @@ label_font_size = 18
 marker = ['>', 'v', '^', 'o', 's']
 
 d = 'out/'
-# d = 'out/merge_result_one/'
+# d = 'out/merge_PCNN_result_two/'
 
 
 def getXY(file_name, n=3000):
@@ -80,4 +80,4 @@ def plot_one(prefix, flag=True):
 
 
 # plot_one("PCNN_ONE_DEF")
-plot_mul(["merge_result_one/PCNN_ONE_DEF_7_PR.txt", "sentence_position/PCNN_ONE_DEF_6_PR.txt"])
+plot_mul(["sentence_position_PCNN_result/PCNN_ONE_DEF_11_PR.txt", "official_theano/test_pr_12.txt"])

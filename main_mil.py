@@ -9,7 +9,7 @@ from torch.utils.data import DataLoader
 import torch.optim as optim
 import torch.nn.functional as F
 from torch.autograd import Variable
-from utils import save_pr, now, eval_metric
+from utils import save_pr, now, eval_metric, calculate_max_fi
 # from torchviz import make_dot
 
 
@@ -57,6 +57,7 @@ def train(**kwargs):
 
     # train
     print("start training...")
+    print(now())
     max_pre = -1.0
     max_rec = -1.0
     for epoch in range(opt.num_epochs):
@@ -83,12 +84,10 @@ def train(**kwargs):
             total_loss += loss.data[0]
             # print("idx: ", idx)
 
-        if epoch < 3:
-            print("epoch: ", epoch)
-            continue
         true_y, pred_y, pred_p = predict(model, test_data_loader)
         all_pre, all_rec, fp_res = eval_metric(true_y, pred_y, pred_p)
 
+        last_f1 = calculate_max_fi(all_pre, all_rec)
         last_pre, last_rec = all_pre[-1], all_rec[-1]
         if last_pre > 0.24 and last_rec > 0.24:
             save_pr(opt.result_dir, model.model_name, epoch, all_pre, all_rec, fp_res, opt=opt.print_opt)
@@ -99,7 +98,8 @@ def train(**kwargs):
                 max_rec = last_rec
                 model.save(opt.print_opt)
 
-        print('{} Epoch {}/{}: train loss: {}; test precision: {}, test recall {}'.format(now(), epoch + 1, opt.num_epochs, total_loss, last_pre, last_rec))
+        print('{} Epoch {}/{}: train loss: {}; test precision: {}, test recall: {}, test f1: {}'
+              .format(now(), epoch + 1, opt.num_epochs, total_loss, last_pre, last_rec, last_f1))
 
 
 def select_instance(model, batch_data, labels):
@@ -209,6 +209,6 @@ def predict(model, test_data_loader):
 
 
 if __name__ == "__main__":
-    train(data="FilterNYT", batch_size=128, use_gpu=False, use_pcnn=False)
+    train(data="FilterNYT", batch_size=128, use_gpu=False, use_pcnn=True)
     # import fire
     # fire.Fire()

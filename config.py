@@ -2,10 +2,10 @@
 
 data_dic ={
     'NYT': {
-        'data_root': './dataset_new/NYT/',
-        'w2v_path': './dataset_new/NYT/w2v.npy',
-        'p1_2v_path': './dataset_new/NYT/p1_2v.npy',
-        'p2_2v_path': './dataset_new/NYT/p2_2v.npy',
+        'data_root': './dataset/NYT/',
+        'w2v_path': './dataset/NYT/w2v.npy',
+        'p1_2v_path': './dataset/NYT/p1_2v.npy',
+        'p2_2v_path': './dataset/NYT/p2_2v.npy',
         'vocab_size': 114044,
         'rel_num': 53
     },

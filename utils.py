@@ -72,3 +72,14 @@ def eval_metric(true_y, pred_y, pred_p):
 
     print("tp={}; fp={}; fn={}; positive_num={}".format(tp, fp, fn, positive_num))
     return all_pre[1:], all_rec[1:], fp_res
+
+
+def calculate_max_fi(pre, rec):
+    max_f1 = 0
+    for p, r in zip(pre, rec):
+        if p + r == 0:
+            continue
+        f1 = 2*p*r / (p+r)
+        if f1 > max_f1:
+            max_f1 = f1
+    return max_f1
