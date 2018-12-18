@@ -10,7 +10,7 @@ label_font_size = 18
 marker = ['>', 'v', '^', 'o', 's']
 
 d = 'out/'
-# d = 'out/merge_PCNN_result_two/'
+# d = 'out/merge_PCNN_result_three/'
 
 
 def getXY(file_name, n=3000):
@@ -78,6 +78,7 @@ def plot_one(prefix, flag=True):
     plt.grid(linestyle='dashdot')
     plt.show()
 
+# official_theano/test_pr_12_DEF_.txt
 
 # plot_one("PCNN_ONE_DEF")
-plot_mul(["sentence_position_PCNN_result/PCNN_ONE_DEF_11_PR.txt", "official_theano/test_pr_12.txt"])
+plot_mul(["merge_PCNN_result_two/PCNN_ONE_DEF_6_PR.txt", "official_theano/test_pr_12_DEF_.txt"])
